@@ -1,7 +1,7 @@
 import type { Messages } from "./en";
 
 export const ru: Messages = {
-  langName: "РУС",
+  langName: "RUS",
   meta: { title: "Miyathara — Истории воды" },
   tagline: "Истории воды: миры для открытий",
   nav: { language: "Язык", about: "О проекте", how: "Как это работает", menu: "Меню", close: "Закрыть" },

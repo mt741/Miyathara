@@ -3,13 +3,17 @@ import { LOCALES, useI18n, type Locale } from "../i18n";
 import { Button } from "./Button";
 import { Card } from "./Card";
 import { Logo } from "./Logo";
+import chevron from "../assets/chevron.svg";
 
 type Panel = "about" | "how" | "lang" | "menu" | null;
+
+/** Card body text: 18px, with one empty line between paragraphs, as in the design. */
+const BODY = "space-y-[1.37em] text-base leading-normal text-ink-soft md:text-lg";
 
 function AboutContent() {
   const { t } = useI18n();
   return (
-    <div className="space-y-4 text-[15px] leading-snug text-ink-soft md:text-base">
+    <div className={BODY}>
       <p className="font-semibold text-link">{t.about.lead}</p>
       {t.about.body.map((p) => (
         <p key={p}>{p}</p>
@@ -21,22 +25,22 @@ function AboutContent() {
 function HowContent() {
   const { t } = useI18n();
   return (
-    <div className="space-y-4 text-[15px] leading-snug text-ink-soft md:text-base">
-      <p className="font-semibold text-ink">{t.how.lead}</p>
+    <div className={BODY}>
+      <p className="font-semibold">{t.how.lead}</p>
       {t.how.steps.map(([term, text]) => (
         <p key={term}>
-          <span className="font-semibold text-link">{term}</span> – {text}
+          <span className="font-semibold text-link">{term}</span> — {text}
         </p>
       ))}
     </div>
   );
 }
 
-const Chevron = () => (
-  <svg width="8" height="5" viewBox="0 0 8 5" fill="none" stroke="currentColor" aria-hidden>
-    <path d="M1 1l3 3 3-3" />
-  </svg>
-);
+/** The design's chevron icon points left. Turned -90° it points down. */
+const Chevron = () => <img src={chevron} width={4.4} height={8} alt="" className="-rotate-90" />;
+
+/** In the design, the caret center is 59px from the card's right edge. */
+const CARET_FROM_RIGHT = 59;
 
 export function Navbar() {
   const { t, locale, setLocale } = useI18n();
@@ -44,16 +48,19 @@ export function Navbar() {
   const ref = useRef<HTMLElement>(null);
   const aboutRef = useRef<HTMLButtonElement>(null);
   const howRef = useRef<HTMLButtonElement>(null);
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [caret, setCaret] = useState<number | undefined>();
+  const [place, setPlace] = useState<{ top: number; right: number; caret: number } | null>(null);
 
-  // Point the card caret at the link that opened it. Label widths change with the language.
+  // Place the card under the link that opened it, with the caret pointing at the link.
+  // Label widths change with the language, so this is measured, not fixed.
   useLayoutEffect(() => {
     const btn = open === "about" ? aboutRef.current : open === "how" ? howRef.current : null;
-    const card = cardRef.current;
-    if (!btn || !card || btn.offsetParent === null) return setCaret(undefined);
+    const header = ref.current;
+    if (!btn || !header || btn.offsetParent === null) return setPlace(null);
     const b = btn.getBoundingClientRect();
-    setCaret(card.getBoundingClientRect().right - (b.left + b.width / 2) - 8);
+    const h = header.getBoundingClientRect();
+    const center = b.left + b.width / 2;
+    const right = Math.max(16, h.right - center - CARET_FROM_RIGHT);
+    setPlace({ top: b.bottom - h.top + 24, right, caret: h.right - right - center });
   }, [open, locale]);
 
   useEffect(() => {
@@ -69,21 +76,21 @@ export function Navbar() {
   }, [open]);
 
   const toggle = (p: Exclude<Panel, null>) => setOpen((cur) => (cur === p ? null : p));
-  const active = (p: Panel) => (open === p ? "underline underline-offset-4" : "");
+  const active = (p: Panel) => (open === p ? "!text-white/70" : "");
   const pick = (l: Locale) => {
     setLocale(l);
     setOpen(null);
   };
 
   return (
-    <header ref={ref} className="absolute inset-x-0 top-0 z-30 px-4 pt-5 md:px-10 md:pt-7">
-      <nav className="flex items-start justify-between gap-4">
+    <header ref={ref} className="absolute inset-x-0 top-0 z-30 px-4 pt-4 md:px-[42px] md:pt-[35px]">
+      <nav className="flex items-center justify-between gap-4 py-[10px]">
         <Logo />
-        <div className="flex items-center gap-4 pt-2 md:gap-7">
+        <div className="flex items-center gap-5 md:gap-[29px]">
           <div className="relative">
             <Button
               variant="nav"
-              className="flex items-center gap-1 font-semibold"
+              className="flex items-center gap-[5px] font-semibold uppercase"
               aria-label={t.nav.language}
               aria-haspopup="menu"
               aria-expanded={open === "lang"}
@@ -93,23 +100,21 @@ export function Navbar() {
               <Chevron />
             </Button>
             {open === "lang" && (
-              <ul role="menu" className="absolute right-0 top-full mt-3 min-w-[9rem] overflow-hidden rounded-card bg-white py-1 shadow-card md:left-1/2 md:right-auto md:-translate-x-1/2">
-                {(Object.keys(LOCALES) as Locale[]).map((l) => (
-                  <li key={l} role="none">
-                    <button
-                      role="menuitemradio"
-                      aria-checked={l === locale}
-                      lang={l}
-                      onClick={() => pick(l)}
-                      className={`flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left text-sm hover:bg-sand ${
-                        l === locale ? "font-semibold text-water" : "text-ink"
-                      }`}
-                    >
-                      {{ kk: "Қазақша", ru: "Русский", en: "English" }[l]}
-                      <span className="text-xs text-ink-muted">{LOCALES[l].langName}</span>
-                    </button>
-                  </li>
-                ))}
+              <ul role="menu" className="absolute left-0 top-full mt-[7px] w-full min-w-[3.6rem]">
+                {(["en", "ru", "kk"] as Locale[])
+                  .filter((l) => l !== locale)
+                  .map((l) => (
+                    <li key={l} role="none">
+                      <button
+                        role="menuitem"
+                        lang={l}
+                        onClick={() => pick(l)}
+                        className="block w-full bg-menu px-[3px] py-1 text-left text-base font-semibold uppercase text-menu-text hover:bg-white md:text-xl"
+                      >
+                        {LOCALES[l].langName}
+                      </button>
+                    </li>
+                  ))}
               </ul>
             )}
           </div>
@@ -138,10 +143,10 @@ export function Navbar() {
       </nav>
 
       {open === "menu" && (
-        <div className="absolute left-4 right-4 top-[4.25rem] sm:hidden">
-          <Card caretRight={14} className="!p-2">
+        <div className="absolute left-4 right-4 top-[5rem] sm:hidden">
+          <Card caretRight={11} className="!p-2">
             {(["about", "how"] as const).map((p) => (
-              <button key={p} onClick={() => setOpen(p)} className="block w-full rounded-lg px-3 py-3 text-left text-base hover:bg-sand">
+              <button key={p} onClick={() => setOpen(p)} className="block w-full rounded-lg px-3 py-3 text-left text-base text-ink-soft hover:bg-sand">
                 {t.nav[p]}
               </button>
             ))}
@@ -151,13 +156,14 @@ export function Navbar() {
 
       {(open === "about" || open === "how") && (
         <div
-          ref={cardRef}
-          className="absolute left-4 right-4 top-[4.25rem] max-h-[calc(100svh-5.5rem)] overflow-y-auto rounded-card sm:left-auto sm:max-h-none sm:overflow-visible sm:w-[440px] md:right-8 md:top-[5.5rem]">
+          className="absolute left-4 right-4 top-[5rem] max-h-[calc(100svh-6rem)] overflow-y-auto rounded-card sm:left-auto sm:max-h-none sm:w-[444px] sm:overflow-visible"
+          style={place ? { top: place.top, right: place.right } : undefined}
+        >
           <Card
             title={open === "about" ? t.about.title : t.how.title}
             onClose={() => setOpen(null)}
             closeLabel={t.nav.close}
-            caretRight={caret}
+            caretRight={place?.caret}
             role="dialog"
             aria-label={open === "about" ? t.about.title : t.how.title}
           >

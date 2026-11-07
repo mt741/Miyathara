@@ -9,15 +9,16 @@ export default {
       colors,
       fontFamily: fonts,
       fontSize: {
-        hero: ["clamp(2.75rem, 7.2vw, 6.5rem)", { lineHeight: "1.06", letterSpacing: "-0.01em" }],
+        // 105px at 1440px wide, line height 113px, as in the design.
+        hero: ["clamp(2.6rem, 7.3vw, 6.5625rem)", { lineHeight: "1.076" }],
       },
-      borderRadius: { card: "14px", panel: "36px" },
+      borderRadius: { card: "15px", panel: "36px" },
       boxShadow: {
-        card: "0 12px 40px rgba(0,0,0,0.18)",
+        card: "0 10px 100px rgba(0,0,0,0.3)",
         panel: "-12px 0 40px rgba(60,45,20,0.18)",
       },
       backgroundImage: {
-        hero: "url('/hero.jpg'), linear-gradient(180deg,#7f8f9c 0%,#b9a586 42%,#7c7a68 58%,#4b6370 72%,#2c4250 100%)",
+        hero: "url('/hero.jpg')",
       },
     },
   },

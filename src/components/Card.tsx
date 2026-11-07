@@ -1,29 +1,42 @@
 import type { HTMLAttributes, ReactNode } from "react";
-import { Button } from "./Button";
+import closeIcon from "../assets/close.svg";
 
 type CardProps = Omit<HTMLAttributes<HTMLDivElement>, "title"> & {
   title?: ReactNode;
   onClose?: () => void;
   closeLabel?: string;
-  /** Draws a small caret on the top edge, at this distance from the right edge. */
+  /** Draws the caret on the top edge. The value is the distance from the card's right edge to the caret's center. */
   caretRight?: number;
 };
 
+/** White card with a soft shadow, as the About and How it works windows in the design. */
 export function Card({ title, onClose, closeLabel = "Close", caretRight, className = "", children, ...props }: CardProps) {
   return (
-    <div className={`relative rounded-card bg-white p-5 text-ink shadow-card md:p-6 ${className}`} {...props}>
+    <div className={`relative rounded-card bg-white p-5 text-ink-soft shadow-card md:p-[25px] ${className}`} {...props}>
       {caretRight !== undefined && (
-        <span aria-hidden className="absolute -top-2 h-4 w-4 rotate-45 rounded-sm bg-white" style={{ right: caretRight }} />
+        <svg
+          aria-hidden
+          width="42"
+          height="23"
+          viewBox="0 0 42 23"
+          className="absolute -top-[22px]"
+          style={{ right: caretRight - 21 }}
+        >
+          <path d="M0 23 17.6 3.2Q21-.8 24.4 3.2L42 23Z" fill="white" />
+        </svg>
       )}
       {(title || onClose) && (
-        <div className="mb-4 flex items-start justify-between gap-4">
-          {title && <h2 className="text-xl font-semibold md:text-2xl">{title}</h2>}
+        <div className="mb-5 flex items-center justify-between gap-4 md:mb-6">
+          {title && <h2 className="text-2xl font-bold leading-tight md:text-[30px]">{title}</h2>}
           {onClose && (
-            <Button variant="icon" aria-label={closeLabel} onClick={onClose} className="-mr-2 -mt-1 shrink-0">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.4">
-                <path d="M1 1l10 10M11 1L1 11" />
-              </svg>
-            </Button>
+            <button
+              type="button"
+              aria-label={closeLabel}
+              onClick={onClose}
+              className="-mr-1 shrink-0 rounded-full p-1 hover:bg-black/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-link"
+            >
+              <img src={closeIcon} width={25} height={25} alt="" />
+            </button>
           )}
         </div>
       )}

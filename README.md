@@ -39,9 +39,15 @@ Search finds a place in any of the three languages, whatever language the page s
 
 To add or change text, edit all three files in `src/i18n/`. If `kk.ts` or `ru.ts` does not have a key, TypeScript reports an error.
 
-## Hero photo
+## Design
 
-Put the hero photo at `public/hero.jpg`. If the file is not there, the page shows a gradient.
+The hero, the navbar, the language menu, and the two info cards follow the Figma file "BLACKPAPER". The design is node 955:1456. The hero photo is `public/hero.jpg`, and the icons are in `src/assets/`.
+
+The design uses three fonts that are not free web fonts. The page uses the nearest free fonts from Google Fonts:
+
+- Avenir Next LT Pro: macOS and iOS show Avenir Next. Other systems show Nunito Sans.
+- Apple Garamond Light Italic: the page uses Cormorant Garamond Light Italic.
+- Season Serif Bold (logo): the page uses Libre Caslon Text Bold.
 
 ## Deploy
 

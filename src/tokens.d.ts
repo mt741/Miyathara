@@ -4,5 +4,6 @@ export declare const colors: {
   ink: { DEFAULT: string; muted: string; soft: string };
   link: string;
   line: string;
+  menu: { DEFAULT: string; text: string };
 };
 export declare const fonts: { sans: string[]; serif: string[]; sansKk: string[]; logo: string[] };

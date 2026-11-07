@@ -1,7 +1,7 @@
 import type { Messages } from "./en";
 
 export const kk: Messages = {
-  langName: "ҚАЗ",
+  langName: "KAZ",
   meta: { title: "Miyathara — Су хикаялары" },
   tagline: "Су хикаялары: ашылатын әлемдер",
   nav: { language: "Тіл", about: "Жоба туралы", how: "Бұл қалай жұмыс істейді", menu: "Мәзір", close: "Жабу" },
