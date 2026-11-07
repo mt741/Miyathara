@@ -31,7 +31,9 @@ export function searchKey(text: string): string {
     .replace(/ch/g, "c")
     .replace(/[yw]/g, (c) => (c === "y" ? "i" : "v")) // Burabay / Burabai
     .replace(/[^a-z0-9]/g, "")
-    .replace(/(.)\1+/g, "$1"); // Taldykkol → Taldykol
+    // Taldykkol → Taldykol. Only double letters: collapsing longer runs would turn "zzzz"
+    // into "z", which matches "Kazakhstan" in every region.
+    .replace(/(.)\1/g, "$1");
   return s;
 }
 

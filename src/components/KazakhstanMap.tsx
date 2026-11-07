@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 import L from "leaflet";
-import { GeoJSON, MapContainer, Marker, Pane, TileLayer, Tooltip, useMap, useMapEvents } from "react-leaflet";
+import { GeoJSON, MapContainer, Marker, Pane, Rectangle, TileLayer, Tooltip, useMap, useMapEvents } from "react-leaflet";
 import { feature } from "topojson-client";
 import type { GeometryCollection, Topology } from "topojson-specification";
 import type { FeatureCollection, Geometry } from "geojson";
@@ -50,6 +50,8 @@ function unwrapAntimeridian(fc: FeatureCollection): FeatureCollection {
 }
 
 const LAND_STYLE: L.PathOptions = { fillColor: colors.sand, fillOpacity: 1, color: colors.water.line, weight: 0.8 };
+const WATER_STYLE: L.PathOptions = { fillColor: colors.water.DEFAULT, fillOpacity: 1, stroke: false };
+const WATER_BOUNDS = L.latLngBounds([-85, -540], [85, 540]);
 const LAKE_STYLE: L.PathOptions = { fillColor: colors.water.DEFAULT, fillOpacity: 1, stroke: false };
 
 const pinSvg = (fill: string, stroke: string) =>
@@ -66,8 +68,12 @@ const PIN = pin(false);
 const PIN_ACTIVE = pin(true);
 
 function fitView(map: L.Map, cover: Props["cover"]) {
-  const mobile = map.getSize().x < 768;
-  map.fitBounds(mobile ? MOBILE_BOUNDS : DESKTOP_BOUNDS, {
+  const size = map.getSize();
+  const mobile = size.x < 1024; // same breakpoint as the side panel in MapSection
+  // Tall screens (phones, tablets in portrait) use the tighter frame around Kazakhstan.
+  // The wide frame would zoom far out and show the Arctic and the Indian Ocean.
+  const portrait = size.y > size.x;
+  map.fitBounds(mobile || portrait ? MOBILE_BOUNDS : DESKTOP_BOUNDS, {
     paddingTopLeft: mobile ? [8, 72] : [0, 0],
     paddingBottomRight: mobile ? [8, cover.bottom + 8] : [cover.right - 40, 0],
     animate: false,
@@ -225,7 +231,12 @@ export const KazakhstanMap = forwardRef<MapHandle, Props>(function KazakhstanMap
           onDetailChange={setDetail}
         />
 
-        {/* Land: cream on a teal background, so the Caspian shows as water. */}
+        {/* Water: a teal shape under the land, so the Caspian shows as water. It must be a shape
+            in the map, not only the container background: the OpenStreetMap layer blends
+            ("multiply") with the shapes under it, and it cannot reach the container background. */}
+        <Rectangle bounds={WATER_BOUNDS} interactive={false} pathOptions={WATER_STYLE} />
+
+        {/* Land: cream countries on top of the water. */}
         {countries && (
           <GeoJSON
             data={countries}

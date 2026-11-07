@@ -21,7 +21,7 @@ function Accented({ text }: { text: string }) {
 }
 
 /** Wheel or swipe inside these elements belongs to them, not to the page. */
-const OWN_SCROLL = "[role=dialog], [role=menu]";
+const OWN_SCROLL = "[role=dialog], [role=menu], [data-overlay]";
 
 export function Hero({ onGoToMap }: { onGoToMap: () => void }) {
   const { t } = useI18n();
@@ -45,10 +45,11 @@ export function Hero({ onGoToMap }: { onGoToMap: () => void }) {
       onWheel={onWheel}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
-      // Desktop: the design fills the width with the photo and stretches it to 126% of the
-      // height, cropped at the bottom. Phones: the same height and crop, without the stretch.
-      className="relative flex h-full flex-col overflow-hidden bg-[#8a8f8f] bg-hero bg-[length:auto_126.13%] bg-[position:62%_0] md:bg-[length:100%_126.13%] md:bg-top"
+      className="relative flex h-full flex-col overflow-hidden bg-[#8a8f8f]"
     >
+      {/* The design shows the photo at 126% of the hero height, cropped at the bottom. The
+          photo layer has that height and covers it, so the photo is never stretched. */}
+      <div aria-hidden className="absolute inset-x-0 top-0 h-[126.13%] bg-hero bg-cover bg-[position:60%_0]" />
       <div aria-hidden className="absolute inset-0 bg-black/30" />
       <Navbar />
       <div className="relative z-10 flex flex-1 flex-col items-center justify-start px-4 pt-[26vh] text-center text-white md:pt-[min(299px,33.2vh)]">

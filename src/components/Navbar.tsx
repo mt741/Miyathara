@@ -4,6 +4,7 @@ import { Button } from "./Button";
 import { Card } from "./Card";
 import { Logo } from "./Logo";
 import chevron from "../assets/chevron.svg";
+import closeIcon from "../assets/close.svg";
 
 type Panel = "about" | "how" | "lang" | "menu" | null;
 
@@ -130,46 +131,86 @@ export function Navbar() {
           </div>
           <Button
             variant="nav"
-            className="-m-2 p-2 sm:hidden"
-            aria-label={t.nav.menu}
+            className="-m-2 flex h-10 w-10 items-center justify-center sm:hidden"
+            aria-label={open === "menu" ? t.nav.close : t.nav.menu}
             aria-expanded={open === "menu"}
+            aria-haspopup="true"
             onClick={() => toggle("menu")}
           >
-            <svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden>
-              <path d="M1 1h20M1 7h20M1 13h20" />
+            <svg width="22" height="16" viewBox="0 0 22 16" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden>
+              {open === "menu" ? <path d="M4 1l14 14M18 1L4 15" /> : <path d="M1 2h20M1 8h20M1 14h20" />}
             </svg>
           </Button>
         </div>
       </nav>
 
+      {/* Phones: a small dropdown under the menu button. */}
       {open === "menu" && (
-        <div className="absolute left-4 right-4 top-[5rem] sm:hidden">
-          <Card caretRight={11} className="!p-2">
-            {(["about", "how"] as const).map((p) => (
-              <button key={p} onClick={() => setOpen(p)} className="block w-full rounded-lg px-3 py-3 text-left text-base text-ink-soft hover:bg-sand">
+        <div role="menu" className="absolute right-4 top-[4.25rem] w-56 animate-pop-in sm:hidden">
+          <div className="overflow-hidden rounded-card bg-white shadow-card">
+            {(["about", "how"] as const).map((p, i) => (
+              <button
+                key={p}
+                role="menuitem"
+                onClick={() => setOpen(p)}
+                className={`flex w-full items-center justify-between px-5 py-4 text-left text-base text-ink-soft active:bg-sand ${
+                  i > 0 ? "border-t border-line" : ""
+                }`}
+              >
                 {t.nav[p]}
+                <img src={chevron} width={4.4} height={8} alt="" className="rotate-180 opacity-40 invert" />
               </button>
             ))}
-          </Card>
+          </div>
         </div>
       )}
 
       {(open === "about" || open === "how") && (
-        <div
-          className="absolute left-4 right-4 top-[5rem] max-h-[calc(100svh-6rem)] overflow-y-auto rounded-card sm:left-auto sm:max-h-none sm:w-[444px] sm:overflow-visible"
-          style={place ? { top: place.top, right: place.right } : undefined}
-        >
-          <Card
-            title={open === "about" ? t.about.title : t.how.title}
-            onClose={() => setOpen(null)}
-            closeLabel={t.nav.close}
-            caretRight={place?.caret}
-            role="dialog"
-            aria-label={open === "about" ? t.about.title : t.how.title}
+        <>
+          {/* Wide screens: the card from the design, under the link, with the caret. */}
+          <div
+            className="absolute hidden w-[444px] sm:block"
+            style={place ? { top: place.top, right: place.right } : undefined}
           >
-            {open === "about" ? <AboutContent /> : <HowContent />}
-          </Card>
-        </div>
+            <Card
+              title={open === "about" ? t.about.title : t.how.title}
+              onClose={() => setOpen(null)}
+              closeLabel={t.nav.close}
+              caretRight={place?.caret}
+              role="dialog"
+              aria-label={open === "about" ? t.about.title : t.how.title}
+            >
+              {open === "about" ? <AboutContent /> : <HowContent />}
+            </Card>
+          </div>
+
+          {/* Phones: a bottom sheet over a dimmed page, like the list sheet on the map. */}
+          <div className="sm:hidden">
+            <div aria-hidden data-overlay className="fixed inset-0 z-40 animate-fade-in bg-black/40" onClick={() => setOpen(null)} />
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-label={open === "about" ? t.about.title : t.how.title}
+              className="fixed inset-x-0 bottom-0 z-50 flex max-h-[85svh] animate-sheet-in flex-col rounded-t-[28px] bg-white text-ink-soft shadow-panel"
+            >
+              <span aria-hidden className="mx-auto mt-2.5 h-1 w-10 shrink-0 rounded-full bg-black/15" />
+              <div className="flex shrink-0 items-center justify-between gap-4 px-6 pb-3 pt-4">
+                <h2 className="text-2xl font-bold leading-tight">{open === "about" ? t.about.title : t.how.title}</h2>
+                <button
+                  type="button"
+                  aria-label={t.nav.close}
+                  onClick={() => setOpen(null)}
+                  className="-mr-2 shrink-0 rounded-full p-1.5 active:bg-black/5"
+                >
+                  <img src={closeIcon} width={25} height={25} alt="" />
+                </button>
+              </div>
+              <div className="overflow-y-auto overscroll-contain px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+                {open === "about" ? <AboutContent /> : <HowContent />}
+              </div>
+            </div>
+          </div>
+        </>
       )}
     </header>
   );

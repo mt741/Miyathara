@@ -15,10 +15,10 @@ body { @apply bg-sand font-sans text-ink antialiased; }
 }
 .leaflet-control-attribution .leaflet-attribution-flag { display: none !important; }
 /* On wide screens the side list covers the bottom-right corner, so move the attribution left. */
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .leaflet-bottom.leaflet-right { right: auto; left: 0; }
 }
-@media (max-width: 767px) {
+@media (max-width: 1023px) {
   .leaflet-bottom.leaflet-right { bottom: auto; top: 0; }
 }
 /* OSM tiles in soft grey, multiplied onto the cream land so only faint detail shows. */

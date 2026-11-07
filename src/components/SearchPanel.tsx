@@ -49,8 +49,8 @@ export const SearchPanel = forwardRef<HTMLDivElement, Props>(function SearchPane
 
   return (
     <aside
-      className={`absolute inset-x-0 bottom-0 z-[600] transition-transform duration-300 md:inset-x-auto md:right-0 md:top-[150px] md:w-[380px] ${
-        open ? "translate-y-0 md:translate-x-0" : "translate-y-[calc(100%-4.25rem)] md:translate-x-full md:translate-y-0"
+      className={`absolute inset-x-0 bottom-0 z-[600] transition-transform duration-300 lg:inset-x-auto lg:right-0 lg:top-[150px] lg:w-[380px] ${
+        open ? "translate-y-0 lg:translate-x-0" : "translate-y-[calc(100%-4.25rem)] lg:translate-x-full lg:translate-y-0"
       }`}
     >
       {/* Collapse handle */}
@@ -58,7 +58,7 @@ export const SearchPanel = forwardRef<HTMLDivElement, Props>(function SearchPane
         aria-label={open ? t.search.hideList : t.search.showList}
         aria-expanded={open}
         onClick={() => onOpenChange(!open)}
-        className="absolute left-1/2 top-0 flex h-7 w-14 -translate-x-1/2 -translate-y-full items-center justify-center rounded-t-xl bg-white md:left-0 md:top-1/2 md:h-12 md:w-6 md:-translate-x-full md:-translate-y-1/2 md:rounded-l-lg md:rounded-tr-none"
+        className="absolute left-1/2 top-0 flex h-7 w-14 -translate-x-1/2 -translate-y-full items-center justify-center rounded-t-xl bg-white lg:left-0 lg:top-1/2 lg:h-12 lg:w-6 lg:-translate-x-full lg:-translate-y-1/2 lg:rounded-l-lg lg:rounded-tr-none"
       >
         <svg
           width="7"
@@ -68,7 +68,7 @@ export const SearchPanel = forwardRef<HTMLDivElement, Props>(function SearchPane
           stroke="currentColor"
           strokeWidth="1.4"
           aria-hidden
-          className={`transition-transform ${open ? "rotate-90 md:rotate-0" : "-rotate-90 md:rotate-180"}`}
+          className={`transition-transform ${open ? "rotate-90 lg:rotate-0" : "-rotate-90 lg:rotate-180"}`}
         >
           <path d="M1 1l5 5-5 5" />
         </svg>
@@ -76,9 +76,9 @@ export const SearchPanel = forwardRef<HTMLDivElement, Props>(function SearchPane
 
       <div
         ref={sheetRef}
-        className="flex max-h-[44svh] flex-col rounded-t-[28px] bg-white px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 shadow-panel sm:px-5 md:h-full md:max-h-none md:rounded-l-panel md:rounded-tr-none md:px-6 md:pb-6 md:pt-5"
+        className={`flex max-h-[44svh] flex-col rounded-t-[28px] bg-white px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 shadow-panel sm:px-5 lg:h-full lg:max-h-none lg:rounded-l-panel lg:rounded-tr-none lg:px-6 lg:pb-6 lg:pt-5${open ? "" : " lg:shadow-none"}`}
       >
-        <label className="relative block md:mr-8">
+        <label className="relative block lg:mr-8">
           <span className="sr-only">{t.search.label}</span>
           <input
             type="search"
@@ -96,7 +96,7 @@ export const SearchPanel = forwardRef<HTMLDivElement, Props>(function SearchPane
           </svg>
         </label>
 
-        <ul className="mt-2 overflow-y-auto overscroll-contain md:mr-8 md:mt-3">
+        <ul className="mt-2 overflow-y-auto overscroll-contain lg:mr-8 lg:mt-3">
           {filtered.map((w) => {
             const [name, region] = t.places[w.id];
             const active = selectedId === w.id;
@@ -106,7 +106,7 @@ export const SearchPanel = forwardRef<HTMLDivElement, Props>(function SearchPane
                   type="button"
                   aria-pressed={active}
                   onClick={() => onSelect(w.id)}
-                  className={`flex w-full items-start gap-3 py-3 text-left transition-colors hover:text-water md:py-2.5 ${
+                  className={`flex w-full items-start gap-3 py-3 text-left transition-colors hover:text-water lg:py-2.5 ${
                     active ? "text-water" : "text-ink"
                   }`}
                 >
