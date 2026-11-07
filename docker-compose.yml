@@ -1,0 +1,13 @@
+services:
+  dev:
+    build: { context: ., target: dev }
+    ports: ["5173:5173"]
+    volumes:
+      - ./:/app
+      - /app/node_modules
+  web:
+    build: { context: ., target: prod }
+    # On the server, .env sets WEB_PORT=127.0.0.1:8095 so only the host nginx can reach it.
+    ports: ["${WEB_PORT:-8080}:80"]
+    restart: unless-stopped
+    profiles: ["prod"]

@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* The page never scrolls. The views slide instead, see App.tsx. */
+html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
+body { @apply bg-sand font-sans text-ink antialiased; }
+:lang(kk) body, body:lang(kk) { @apply font-sansKk; }
+
+/* Leaflet, styled to the minimal design */
+.leaflet-container { font: inherit; }
+.leaflet-container a { color: theme("colors.water.DEFAULT"); }
+.leaflet-control-attribution {
+  @apply !bg-sand/80 !px-2 !text-[10px] !text-ink-muted;
+}
+.leaflet-control-attribution .leaflet-attribution-flag { display: none !important; }
+/* On wide screens the side list covers the bottom-right corner, so move the attribution left. */
+@media (min-width: 768px) {
+  .leaflet-bottom.leaflet-right { right: auto; left: 0; }
+}
+@media (max-width: 767px) {
+  .leaflet-bottom.leaflet-right { bottom: auto; top: 0; }
+}
+/* OSM tiles in soft grey, multiplied onto the cream land so only faint detail shows. */
+.osm-tint { filter: grayscale(1) brightness(1.3) contrast(0.8); opacity: 0.55; }
+.map-pin { background: none; border: 0; }
+.map-pin svg { filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.25)); }
+.map-tooltip {
+  @apply rounded-full border-0 bg-white px-3 py-1 text-xs font-semibold text-ink shadow-card;
+}
+.map-tooltip::before { display: none; }
